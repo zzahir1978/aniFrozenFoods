@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Product Page</title>
+    <link rel="icon" href="/z.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .product-table img {
+            border-radius: 10px;
+            max-height: 150px;
+            max-width: 150px;
+            object-fit: cover;
+        }
+        .btn-primary, .btn-danger {
+            margin-right: 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-create {
+            margin-bottom: 20px;
+        }
+        .text-muted {
+            color: #6c757d;
+        }
+        h1 {
+            color: #343a40;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">My Projects</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="http://localhost:8081/">Home</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Projects
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/products">Product</a></li>
+                <li><a class="dropdown-item" href="/phoneBooks">Phone Book</a></li>
+                <li><a class="dropdown-item" href="/sales">Sales Report</a></li>
+                <li><a class="dropdown-item" href="/expenses">Expenses Report</a></li>
+                <li><a class="dropdown-item" href="/incomeStatements">Income Statement</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://zzahir1978.github.io/resume/resume.html">My Resume</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center">Products</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <span class="text-muted">Manage your products efficiently</span>
+            <a class="btn btn-success btn-create" href="/products/create">Create Product</a>
+        </div>
+
+        <table class="table table-hover table-striped product-table">
+            <thead class="table-dark">
+                <tr>
+                    <th>No.</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="product, iterStat : ${products}">
+                    <td></td>
+                    <td th:text="${product.id}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.brand}"></td>
+                    <td th:text="${product.category}"></td>
+                    <td th:text="${'RM' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
+                    <td th:text="${product.description}"></td>
+                    <td>
+                        <img th:src="@{'/images/' + ${product.imageFileName}}" alt="Product Image">
+                    </td>
+                    <td th:text="${#dates.format(product.createdAt, 'yyyy-MM-dd')}"></td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-primary btn-sm" th:href="@{/products/edit(id=${product.id})}">Edit</a>
+                            <a class="btn btn-danger btn-sm" th:href="@{/products/delete(id=${product.id})}" 
+                                onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                    </td>                                   
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Back Button -->
+        <div class="text-center">
+            <a class="btn btn-secondary" href="http://localhost:8081/">Back To Main Page</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+
+    <script>
+        // Function to format numbers with commas as thousand separators
+        function formatNumberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Function to format the Price column values
+        function formatPriceColumn() {
+            var rows = document.querySelectorAll('.product-table tbody tr');
+            rows.forEach(function(row) {
+                var priceCell = row.cells[5]; // Assuming the Price column is the 6th column (index 5)
+                var priceValue = parseFloat(priceCell.textContent.replace('RM', '').replace(',', ''));
+                if (!isNaN(priceValue)) {
+                    priceCell.textContent = 'RM' + formatNumberWithCommas(priceValue.toFixed(2));
+                }
+            });
+        }
+
+        // Function to sort the table by Name and group by Brand
+        function sortAndGroupTable() {
+            var table = document.querySelector('.product-table tbody');
+            var rows = Array.from(table.rows);
+
+            // Sort rows by Name
+            rows.sort(function(a, b) {
+                var nameA = a.cells[2].textContent.trim().toLowerCase(); // Assuming Name column is 3rd (index 2)
+                var nameB = b.cells[2].textContent.trim().toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+
+            // Group rows by Brand
+            var groupedRows = rows.reduce(function(acc, row) {
+                var brand = row.cells[3].textContent.trim().toLowerCase(); // Assuming Brand column is 4th (index 3)
+                if (!acc[brand]) {
+                    acc[brand] = [];
+                }
+                acc[brand].push(row);
+                return acc;
+            }, {});
+
+            // Append grouped rows back to the table
+            table.innerHTML = '';
+            Object.keys(groupedRows).sort().forEach(function(brand) {
+                groupedRows[brand].forEach(function(row) {
+                    table.appendChild(row);
+                });
+            });
+        }
+
+        // Function to add row numbers to the "No." column
+        function addRowNumbers() {
+            var rows = document.querySelectorAll('.product-table tbody tr');
+            rows.forEach(function(row, index) {
+                var cell = row.cells[0]; // "No." column is the 1st column (index 0)
+                cell.textContent = index + 1;
+            });
+        }
+
+        // Call the functions when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            formatPriceColumn();
+            sortAndGroupTable();
+            addRowNumbers();
+        });
+    </script>
+
+    <style>
+        .button-container {
+            display: flex;
+            gap: 5px; /* Adjust the gap between buttons as needed */
+        }
+    </style>
+    
+</body>
+</html>
