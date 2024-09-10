@@ -54,6 +54,35 @@
             text-align: center;
             vertical-align: middle;
         }
+        
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #f8f9fa;
+            padding-top: 60px;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar a {
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #343a40;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        /* Main content */
+        .content {
+            margin-left: 260px; /* Ensure it doesn't overlap the sidebar */
+            padding: 20px; /* Optional padding for better appearance */
+        }
     </style>
 </head>
 <body>
@@ -90,57 +119,77 @@
       </div>
     </nav>
 
-    <div class="container">
-        <h1 class="text-center">Products</h1>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <span class="text-muted">Manage your products efficiently</span>
-            <a class="btn btn-success btn-create" href="/products/create">Create Product</a>
-        </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="http://localhost:8081/">Home</a>
+      <!--<a href="/products">Product</a>-->
+      <a href="/phoneBooks">Phone Book</a>
+      <a href="/sales">Sales Report</a>
+      <a href="/expenses">Expenses Report</a>
+      <a href="/incomeStatements">Income Statement</a>
+      <form action="/logout" method="post" style="display: inline;">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <button type="submit" class="logout-btn" style="padding: 15px; border: none; background: none; width: 100%;">
+          Logout
+        </button>
+      </form>
+    </div>
 
-        <table class="table table-hover table-striped product-table">
-            <thead class="table-dark">
-                <tr>
-                    <th>No.</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                    <th>Created At</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="product, iterStat : ${products}">
-                    <td></td>
-                    <td th:text="${product.id}"></td>
-                    <td th:text="${product.name}"></td>
-                    <td th:text="${product.brand}"></td>
-                    <td th:text="${product.category}"></td>
-                    <td th:text="${'RM' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
-                    <td th:text="${product.description}"></td>
-                    <td>
-                        <img th:src="@{'/images/' + ${product.imageFileName}}" alt="Product Image">
-                    </td>
-                    <td th:text="${#dates.format(product.createdAt, 'yyyy-MM-dd')}"></td>
-                    <td>
-                        <div class="btn-group">
-                            <a class="btn btn-primary btn-sm" th:href="@{/products/edit(id=${product.id})}">Edit</a>
-                            <a class="btn btn-danger btn-sm" th:href="@{/products/delete(id=${product.id})}" 
-                                onclick="return confirm('Are you sure?')">Delete</a>
-                        </div>
-                    </td>                                   
-                </tr>
-            </tbody>
-        </table>
+    <!-- Main Content -->
+    <div class="content">
+        <div class="container">
+            <h1 class="text-center">Products Summary</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="text-muted">Products List</span>
+                <a class="btn btn-success btn-create" href="/products/create">Create Product</a>
+            </div>
 
-        <!-- Back Button -->
-        <div class="text-center">
-            <a class="btn btn-secondary" href="http://localhost:8081/">Back To Main Page</a>
+            <table class="table table-hover table-striped product-table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No.</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product, iterStat : ${products}">
+                        <td></td>
+                        <td th:text="${product.id}"></td>
+                        <td th:text="${product.name}"></td>
+                        <td th:text="${product.brand}"></td>
+                        <td th:text="${product.category}"></td>
+                        <td th:text="${'RM' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
+                        <td th:text="${product.description}"></td>
+                        <td>
+                            <img th:src="@{'/images/' + ${product.imageFileName}}" alt="Product Image">
+                        </td>
+                        <td th:text="${#dates.format(product.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-primary btn-sm" th:href="@{/products/edit(id=${product.id})}">Edit</a>
+                                <a class="btn btn-danger btn-sm" th:href="@{/products/delete(id=${product.id})}" 
+                                    onclick="return confirm('Are you sure?')">Delete</a>
+                            </div>
+                        </td>                                   
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Back Button -->
+            <div class="text-center">
+                <a class="btn btn-secondary" href="http://localhost:8081/">Back To Main Page</a>
+            </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
@@ -170,53 +219,43 @@
 
             // Sort rows by Name
             rows.sort(function(a, b) {
-                var nameA = a.cells[2].textContent.trim().toLowerCase(); // Assuming Name column is 3rd (index 2)
-                var nameB = b.cells[2].textContent.trim().toLowerCase();
+                var nameA = a.cells[2].textContent.toLowerCase();
+                var nameB = b.cells[2].textContent.toLowerCase();
                 return nameA.localeCompare(nameB);
             });
 
             // Group rows by Brand
-            var groupedRows = rows.reduce(function(acc, row) {
-                var brand = row.cells[3].textContent.trim().toLowerCase(); // Assuming Brand column is 4th (index 3)
-                if (!acc[brand]) {
-                    acc[brand] = [];
+            var groupedRows = [];
+            var currentBrand = '';
+            var brandGroup = [];
+
+            rows.forEach(function(row) {
+                var brand = row.cells[3].textContent;
+                if (brand !== currentBrand) {
+                    if (brandGroup.length > 0) {
+                        groupedRows.push(...brandGroup);
+                    }
+                    brandGroup = [row];
+                    currentBrand = brand;
+                } else {
+                    brandGroup.push(row);
                 }
-                acc[brand].push(row);
-                return acc;
-            }, {});
+            });
 
-            // Append grouped rows back to the table
+            if (brandGroup.length > 0) {
+                groupedRows.push(...brandGroup);
+            }
+
             table.innerHTML = '';
-            Object.keys(groupedRows).sort().forEach(function(brand) {
-                groupedRows[brand].forEach(function(row) {
-                    table.appendChild(row);
-                });
+            groupedRows.forEach(function(row) {
+                table.appendChild(row);
             });
         }
 
-        // Function to add row numbers to the "No." column
-        function addRowNumbers() {
-            var rows = document.querySelectorAll('.product-table tbody tr');
-            rows.forEach(function(row, index) {
-                var cell = row.cells[0]; // "No." column is the 1st column (index 0)
-                cell.textContent = index + 1;
-            });
-        }
-
-        // Call the functions when the page loads
-        window.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             formatPriceColumn();
             sortAndGroupTable();
-            addRowNumbers();
         });
     </script>
-
-    <style>
-        .button-container {
-            display: flex;
-            gap: 5px; /* Adjust the gap between buttons as needed */
-        }
-    </style>
-    
 </body>
 </html>
